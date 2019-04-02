@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">kuy geo</string>
     <string name="title_activity_maps">Map</string>
+    <string name="title_activity_main">Kuygeo</string>
+    <string name="action_settings">Settings</string>
+    <string name="alarm_title">Alarm title</string>
+    <string name="alert_title">Alert Title</string>
 </resources>
