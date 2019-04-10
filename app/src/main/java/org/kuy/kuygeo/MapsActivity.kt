@@ -4,7 +4,9 @@ import android.Manifest
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.location.Location
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
@@ -19,11 +21,15 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import org.kuy.kuygeo.domain.MY_PERMISSION_CODE
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
+import com.google.android.gms.maps.model.BitmapDescriptor
+
+
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -111,29 +117,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onStop()
     }
 
-    //TODO verificar condicion más interna
     private fun checkPermission(permission: String): Boolean {
         return isGrantedPermission(permission)
     }
 
     private fun requestPermission(permission: String) {
-        if (shouldShowPermissionRequest(permission)) {
-            ActivityCompat.requestPermissions(
-                this, arrayOf(
-                    permission
-                ), MY_PERMISSION_CODE
-            )
-        } else {
-            ActivityCompat.requestPermissions(
-                this, arrayOf(
-                    permission
-                ), MY_PERMISSION_CODE
-            )
-        }
+        ActivityCompat.requestPermissions(
+            this, arrayOf(
+                permission
+            ), MY_PERMISSION_CODE
+        )
     }
-
-    private fun shouldShowPermissionRequest(permission: String) =
-        ActivityCompat.shouldShowRequestPermissionRationale(this, permission)
 
     private fun isGrantedPermission(permission: String) =
         ContextCompat.checkSelfPermission(
@@ -162,31 +156,35 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 longitude = lastLocation.longitude
 
                 val point = LatLng(latitude, longitude)
-                val markerOptions = MarkerOptions()
-                    .position(point)
-                    .title("Estás acá")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
-                marker = mMap.addMarker(markerOptions)
-
-                moveCamera(point)
+                putMarker(point, "Estás acá")
             }
         }
+    }
+
+    private fun putMarker(point: LatLng, title: String) {
+        val markerOptions = MarkerOptions()
+            .position(point)
+            .title(title)
+            .icon(bitmapDescriptorFromVector(applicationContext, R.mipmap.world_alert))
+        marker = mMap.addMarker(markerOptions)
+
+        moveCamera(point)
+    }
+
+    private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
+        val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)
+        vectorDrawable!!.setBounds(0, 0, vectorDrawable.intrinsicWidth, vectorDrawable.intrinsicHeight)
+        val bitmap =
+            Bitmap.createBitmap(vectorDrawable.intrinsicWidth, vectorDrawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        vectorDrawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
     private fun moveCamera(point: LatLng) {
         mMap.moveCamera(CameraUpdateFactory.newLatLng(point))
         mMap.animateCamera(CameraUpdateFactory.zoomTo(11f))
     }
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
 
     @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
@@ -201,9 +199,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             mMap.isMyLocationEnabled = true
         }
 
-        // Enable Zoom Control
+        mMap.mapType = GoogleMap.MAP_TYPE_HYBRID
 
+        mMap.setOnMapClickListener{
+            putMarker(it, "Holaaa")
+        }
+        // Enable Zoom Control
         mMap.uiSettings.isZoomControlsEnabled = true
 
     }
+
+
 }
