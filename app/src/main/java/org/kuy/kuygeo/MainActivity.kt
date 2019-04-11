@@ -7,8 +7,13 @@ import android.support.v7.widget.GridLayoutManager
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import org.kuy.kuygeo.domain.GeoAlert
+import org.kuy.kuygeo.service.GeoAlertService
 
 class MainActivity : AppCompatActivity() {
+
+    private val geoAlertService: GeoAlertService = GeoAlertService(this)
+    private var geoAlerts = ArrayList<GeoAlert>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
