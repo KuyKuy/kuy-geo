@@ -6,7 +6,6 @@ import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.location.Location
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
@@ -26,7 +25,6 @@ import org.kuy.kuygeo.domain.MY_PERMISSION_CODE
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.drawable.Drawable
 import com.google.android.gms.maps.model.BitmapDescriptor
 
 

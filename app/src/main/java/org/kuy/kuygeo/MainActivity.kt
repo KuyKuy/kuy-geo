@@ -2,9 +2,8 @@ package org.kuy.kuygeo
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.GridLayoutManager
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -20,11 +19,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeComponents(){
-        fab.setOnClickListener { view ->
+        fab.setOnClickListener {
             goToMapActivity()
         }
-        alertsRV.layoutManager = LinearLayoutManager(this)
-        alertsRV.adapter = AlertAdapter()
+        alertsRV.layoutManager = GridLayoutManager(this, 3)
+        alertsRV.adapter = GeoAlertAdapter()
     }
 
     private fun goToMapActivity() {

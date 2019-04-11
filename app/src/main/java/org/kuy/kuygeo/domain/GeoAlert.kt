@@ -12,4 +12,9 @@ class GeoAlert {
         this.title = title
         this.point = point
     }
+
+    constructor(title: String?, point: LatLng?){
+        this.title = title
+        this.point = point
+    }
 }

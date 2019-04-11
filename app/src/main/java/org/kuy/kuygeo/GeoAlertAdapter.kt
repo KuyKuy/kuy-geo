@@ -3,12 +3,16 @@ package org.kuy.kuygeo
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.item_alert.view.*
+import com.google.android.gms.maps.model.LatLng
+import org.kuy.kuygeo.domain.GeoAlert
 
 
-class AlertAdapter : RecyclerView.Adapter<AlertItemHolder>() {
+class GeoAlertAdapter : RecyclerView.Adapter<AlertItemHolder>() {
 
-    val alerts = listOf("dos","hola", "perra", "grom")
+    private val alerts = listOf(GeoAlert("casa", LatLng(1.toDouble(),1.toDouble())),
+        GeoAlert("trabajo asdasasd asd", LatLng(1.toDouble(),1.toDouble())),
+        GeoAlert("dojo", LatLng(1.toDouble(),1.toDouble())),
+        GeoAlert("que cosa", LatLng(1.toDouble(),1.toDouble())))
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlertItemHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -17,8 +21,8 @@ class AlertAdapter : RecyclerView.Adapter<AlertItemHolder>() {
     }
 
     override fun onBindViewHolder(itemHolder: AlertItemHolder, position: Int) {
-        val title = alerts[position]
-        itemHolder.view.alertItemTitle.text = title
+        val geoAlert = alerts[position]
+        itemHolder.bindView(geoAlert)
     }
 
 
