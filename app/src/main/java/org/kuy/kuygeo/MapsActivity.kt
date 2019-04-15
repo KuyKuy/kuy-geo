@@ -4,6 +4,7 @@ import android.Manifest
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
@@ -26,7 +27,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import com.google.android.gms.maps.model.BitmapDescriptor
-
+import org.kuy.kuygeo.domain.GeoAlert
+import org.kuy.kuygeo.service.GeoAlertService
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -36,7 +38,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var latitude: Double = 0.toDouble()
     private var longitude: Double = 0.toDouble()
     private lateinit var lastLocation: Location
-    private var marker: Marker? = null
+    private var currentPosMarker: Marker? = null
+
+    private val geoAlertService: GeoAlertService = GeoAlertService(this)
+    private var geoAlerts : List<GeoAlert> = emptyList()
+    private var markers : Array<Marker> = emptyArray()
+
 
     //location
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -147,14 +154,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 val lastLocationIndex = locationResult!!.locations.size - 1
                 lastLocation = locationResult.locations[lastLocationIndex]
 
-                if (marker != null) {
-                    marker!!.remove()
+                if (currentPosMarker != null) {
+                    currentPosMarker!!.remove()
                 }
                 latitude = lastLocation.latitude
                 longitude = lastLocation.longitude
 
                 val point = LatLng(latitude, longitude)
                 putMarker(point, "Estás acá")
+                getMarkers()
             }
         }
     }
@@ -164,9 +172,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .position(point)
             .title(title)
             .icon(bitmapDescriptorFromVector(applicationContext, R.mipmap.world_alert))
-        marker = mMap.addMarker(markerOptions)
+        currentPosMarker = mMap.addMarker(markerOptions)
 
         moveCamera(point)
+    }
+
+    private fun getMarkers(){
+        this.geoAlerts = geoAlertService.findAll()
+        var marker:Marker
+        var markerOptions: MarkerOptions
+        geoAlerts.forEach{
+            markerOptions = MarkerOptions()
+                .position(it.point!!)
+                .title(it.title)
+                .icon(bitmapDescriptorFromVector(applicationContext, R.mipmap.world_alert))
+            marker = mMap.addMarker(markerOptions)
+            markers.plus(marker)
+        }
     }
 
     private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
@@ -181,7 +203,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun moveCamera(point: LatLng) {
         mMap.moveCamera(CameraUpdateFactory.newLatLng(point))
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(11f))
+        //mMap.animateCamera(CameraUpdateFactory.zoomTo(11f))
     }
 
     @SuppressLint("MissingPermission")
@@ -200,11 +222,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.mapType = GoogleMap.MAP_TYPE_HYBRID
 
         mMap.setOnMapClickListener{
-            putMarker(it, "Holaaa")
+            openCreateGeoAlertPopUp(it)
         }
         // Enable Zoom Control
         mMap.uiSettings.isZoomControlsEnabled = true
 
+    }
+
+    private fun openCreateGeoAlertPopUp(point: LatLng) {
+        val dialogBuilder = AlertDialog.Builder(this, R.style.AppTheme_NoActionBar)
+        val inflater = this.layoutInflater
+        val popupView = inflater.inflate(R.layout.popup_geoalert, null)
+        dialogBuilder.setView(popupView)
+        dialogBuilder.setPositiveButton(getString(R.string.ok_popup))
+        { dialog, id ->
+
+        }
+        dialogBuilder.setNegativeButton(getString(R.string.cancel_popup))
+        {
+            dialog, id ->
+
+        }
+
+
+        putMarker(point, title)
     }
 
 

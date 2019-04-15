@@ -5,4 +5,8 @@
     <string name="action_settings">Settings</string>
     <string name="alarm_title">Alarm title</string>
     <string name="alert_title">Alert Title</string>
+    <string name="point">latitude, longitude</string>
+    <string name="title">Título</string>
+    <string name="ok_popup">OK</string>
+    <string name="cancel_popup">Cancel</string>
 </resources>
