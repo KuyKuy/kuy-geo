@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import com.google.android.gms.maps.model.BitmapDescriptor
+import kotlinx.android.synthetic.main.popup_geoalert.*
 import org.kuy.kuygeo.domain.GeoAlert
 import org.kuy.kuygeo.service.GeoAlertService
 
@@ -162,7 +163,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 val point = LatLng(latitude, longitude)
                 putMarker(point, "Estás acá")
-                getMarkers()
             }
         }
     }
@@ -175,20 +175,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         currentPosMarker = mMap.addMarker(markerOptions)
 
         moveCamera(point)
-    }
-
-    private fun getMarkers(){
-        this.geoAlerts = geoAlertService.findAll()
-        var marker:Marker
-        var markerOptions: MarkerOptions
-        geoAlerts.forEach{
-            markerOptions = MarkerOptions()
-                .position(it.point!!)
-                .title(it.title)
-                .icon(bitmapDescriptorFromVector(applicationContext, R.mipmap.world_alert))
-            marker = mMap.addMarker(markerOptions)
-            markers.plus(marker)
-        }
     }
 
     private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
@@ -212,7 +198,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Init Google Play Service
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (isGrantedPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            if (isGrantedPermission(ACCESS_FINE_LOCATION)) {
                 mMap.isMyLocationEnabled = true
             }
         } else {
@@ -223,29 +209,51 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         mMap.setOnMapClickListener{
             openCreateGeoAlertPopUp(it)
+            putMarkers()
         }
         // Enable Zoom Control
         mMap.uiSettings.isZoomControlsEnabled = true
+        putMarkers()
 
     }
 
+    private fun putMarkers(){
+        this.geoAlerts = geoAlertService.findAll()
+        var marker:Marker
+        var markerOptions: MarkerOptions
+        geoAlerts.forEach{
+            markerOptions = MarkerOptions()
+                .position(it.point!!)
+                .title(it.title)
+                .icon(bitmapDescriptorFromVector(applicationContext, R.mipmap.world_alert))
+            marker = mMap.addMarker(markerOptions)
+            markers.plus(marker)
+        }
+    }
+
+    //TODO tema del dialog incorrecto
+    //TODO los campos del formulario no están siendo inyectados correctamente
     private fun openCreateGeoAlertPopUp(point: LatLng) {
+        var geoAlert:GeoAlert
         val dialogBuilder = AlertDialog.Builder(this, R.style.AppTheme_NoActionBar)
         val inflater = this.layoutInflater
         val popupView = inflater.inflate(R.layout.popup_geoalert, null)
         dialogBuilder.setView(popupView)
         dialogBuilder.setPositiveButton(getString(R.string.ok_popup))
-        { dialog, id ->
-
+        { _, _ ->
+            val title = titleET?.text.toString()
+            val textPoint = "latitud: ${point.latitude}, longitud: ${point.longitude}"
+            pointTV?.text = textPoint
+            if(title.isNotEmpty()){
+                geoAlert = GeoAlert(title, point)
+                geoAlertService.save(geoAlert)
+            }
         }
-        dialogBuilder.setNegativeButton(getString(R.string.cancel_popup))
-        {
-            dialog, id ->
+        dialogBuilder.setNegativeButton(getString(R.string.cancel_popup)){_, _ ->}
 
-        }
+        val popupDialog = dialogBuilder.create()
+        popupDialog.show()
 
-
-        putMarker(point, title)
     }
 
 
