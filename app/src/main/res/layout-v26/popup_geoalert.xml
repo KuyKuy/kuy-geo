@@ -17,7 +17,9 @@
             android:layout_marginStart="8dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
             android:layout_marginBottom="2dp"
             android:inputType="textAutoComplete"
-            android:autofillHints="@string/title" tools:targetApi="o"/>
+            android:hint="@string/title"
+            android:autofillHints="@string/title"
+            tools:targetApi="o"/>
     <TextView
             android:text="@string/point"
             android:layout_width="0dp"

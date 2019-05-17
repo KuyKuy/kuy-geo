@@ -3,7 +3,6 @@ package org.kuy.kuygeo.activities
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
@@ -25,6 +24,9 @@ import org.kuy.kuygeo.domain.MY_PERMISSION_CODE
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.support.v7.app.AlertDialog
+import android.widget.EditText
+import android.widget.TextView
 import com.google.android.gms.maps.model.BitmapDescriptor
 import kotlinx.android.synthetic.main.popup_geoalert.*
 import org.kuy.kuygeo.R
@@ -236,31 +238,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    //TODO tema del dialog incorrecto
-    //TODO los campos del formulario no están siendo inyectados correctamente
+    //TODO ajustar tema del dialogo para que no se muestre en toda la pantalla
     private fun openCreateGeoAlertPopUp(point: LatLng) {
-        var geoAlert:GeoAlert
-        val dialogBuilder = AlertDialog.Builder(this, R.style.AppTheme_NoActionBar)
+        var geoAlert: GeoAlert
         val inflater = this.layoutInflater
         val popupView = inflater.inflate(R.layout.popup_geoalert, null)
-        dialogBuilder.setView(popupView)
-        dialogBuilder.setPositiveButton(getString(R.string.ok_popup))
-        { _, _ ->
-            val title = titleET?.text.toString()
-            val textPoint = "latitud: ${point.latitude}, longitud: ${point.longitude}"
-            pointTV?.text = textPoint
-            if(title.isNotEmpty()){
-                geoAlert = GeoAlert(title, point)
-                geoAlertService.save(geoAlert)
-                putMarkers()
-            }
-        }
-        dialogBuilder.setNegativeButton(getString(R.string.cancel_popup)){ _, _ ->}
+        val dialogBuilder = AlertDialog.Builder(this, R.style.AppTheme_NoActionBar)
 
-        val popupDialog = dialogBuilder.create()
-        popupDialog.show()
+        val textPoint = "latitud: ${point.latitude} \n longitud: ${point.longitude}"
+        popupView.findViewById<TextView>(R.id.pointTV).text = textPoint
+
+        dialogBuilder
+            .setView(popupView)
+            .setPositiveButton(getString(R.string.ok_popup))
+            { _, _ ->
+                if (title.isNotEmpty()) {
+                    val title = popupView.findViewById<EditText>(R.id.titleET).text.toString()
+                    geoAlert = GeoAlert(title, point)
+                    geoAlertService.save(geoAlert)
+                    putMarkers()
+                }
+            }
+            .setNegativeButton(getString(R.string.cancel_popup)) { _, _ -> }
+            .create()
+            .show()
 
     }
-
-
 }

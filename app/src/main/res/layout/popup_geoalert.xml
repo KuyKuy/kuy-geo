@@ -18,6 +18,7 @@
             android:layout_marginBottom="2dp"
             app:layout_constraintBottom_toTopOf="@+id/pointTV"
             android:inputType="textAutoComplete"
+            android:hint="@string/title"
             android:autofillHints="@string/title"
             tools:targetApi="o"/>
     <TextView
