@@ -4,9 +4,9 @@ import android.content.ContentValues
 import android.content.Context
 import org.kuy.kuygeo.domain.GeoAlert
 import org.kuy.kuygeo.repository.dao.DbManager
-import org.kuy.kuygeo.repository.dao.GeoAlertDBConst.GeoAlertEntry.COLUMN_LATITUDE
-import org.kuy.kuygeo.repository.dao.GeoAlertDBConst.GeoAlertEntry.COLUMN_LONGITUDE
-import org.kuy.kuygeo.repository.dao.GeoAlertDBConst.GeoAlertEntry.COLUMN_TITLE
+import org.kuy.kuygeo.repository.dao.GeoAlertDBConst.GeoAlertEntry.LATITUDE_COLUMN
+import org.kuy.kuygeo.repository.dao.GeoAlertDBConst.GeoAlertEntry.LONGITUDE_COLUMN
+import org.kuy.kuygeo.repository.dao.GeoAlertDBConst.GeoAlertEntry.TITLE_COLUMN
 import org.kuy.kuygeo.repository.dao.KuyGeoDbHelper
 
 class GeoAlertRepository(context: Context) {
@@ -27,9 +27,9 @@ class GeoAlertRepository(context: Context) {
     fun save(geoAlert: GeoAlert?) {
         val noteFounded = findById(geoAlert?.id)
         val values = ContentValues().apply {
-            put(COLUMN_TITLE, geoAlert?.title)
-            put(COLUMN_LONGITUDE, geoAlert?.point?.longitude)
-            put(COLUMN_LATITUDE, geoAlert?.point?.latitude)
+            put(TITLE_COLUMN, geoAlert?.title)
+            put(LONGITUDE_COLUMN, geoAlert?.point?.longitude)
+            put(LATITUDE_COLUMN, geoAlert?.point?.latitude)
         }
         if(noteFounded != null){
             dbManager.update(geoAlert?.id, values)
@@ -43,5 +43,9 @@ class GeoAlertRepository(context: Context) {
     fun delete(geoAlert: GeoAlert?){
         dbManager.delete(geoAlert)
         dbManager.close()
+    }
+
+    fun deleteAll() {
+        dbManager.deleteAll()
     }
 }

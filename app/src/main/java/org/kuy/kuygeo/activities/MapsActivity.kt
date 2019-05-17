@@ -1,6 +1,5 @@
-package org.kuy.kuygeo
+package org.kuy.kuygeo.activities
 
-import android.Manifest
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
@@ -28,6 +27,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import com.google.android.gms.maps.model.BitmapDescriptor
 import kotlinx.android.synthetic.main.popup_geoalert.*
+import org.kuy.kuygeo.R
 import org.kuy.kuygeo.domain.GeoAlert
 import org.kuy.kuygeo.service.GeoAlertService
 
@@ -64,6 +64,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun initializeComponents() {
+        //geoAlertService.deleteAll()
         handlePermission()
         handleLocation()
     }
@@ -162,19 +163,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 longitude = lastLocation.longitude
 
                 val point = LatLng(latitude, longitude)
-                putMarker(point, "Estás acá")
+                putPositionMarker(point, "Estás acá")
             }
         }
     }
 
-    private fun putMarker(point: LatLng, title: String) {
+    private fun putGeoAlertMarker(point: LatLng, title: String) : Marker{
         val markerOptions = MarkerOptions()
             .position(point)
             .title(title)
             .icon(bitmapDescriptorFromVector(applicationContext, R.mipmap.world_alert))
+
+        moveCamera(point)
+
+        return  mMap.addMarker(markerOptions)
+    }
+
+    private fun putPositionMarker(point: LatLng, title: String) {
+        val markerOptions = MarkerOptions()
+            .position(point)
+            .title(title)
         currentPosMarker = mMap.addMarker(markerOptions)
 
         moveCamera(point)
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(11f))
     }
 
     private fun bitmapDescriptorFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
@@ -189,7 +201,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun moveCamera(point: LatLng) {
         mMap.moveCamera(CameraUpdateFactory.newLatLng(point))
-        //mMap.animateCamera(CameraUpdateFactory.zoomTo(11f))
     }
 
     @SuppressLint("MissingPermission")
@@ -209,7 +220,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         mMap.setOnMapClickListener{
             openCreateGeoAlertPopUp(it)
-            putMarkers()
         }
         // Enable Zoom Control
         mMap.uiSettings.isZoomControlsEnabled = true
@@ -220,13 +230,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun putMarkers(){
         this.geoAlerts = geoAlertService.findAll()
         var marker:Marker
-        var markerOptions: MarkerOptions
         geoAlerts.forEach{
-            markerOptions = MarkerOptions()
-                .position(it.point!!)
-                .title(it.title)
-                .icon(bitmapDescriptorFromVector(applicationContext, R.mipmap.world_alert))
-            marker = mMap.addMarker(markerOptions)
+            marker = putGeoAlertMarker(it.point!!, it.title!!)
             markers.plus(marker)
         }
     }
@@ -247,9 +252,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             if(title.isNotEmpty()){
                 geoAlert = GeoAlert(title, point)
                 geoAlertService.save(geoAlert)
+                putMarkers()
             }
         }
-        dialogBuilder.setNegativeButton(getString(R.string.cancel_popup)){_, _ ->}
+        dialogBuilder.setNegativeButton(getString(R.string.cancel_popup)){ _, _ ->}
 
         val popupDialog = dialogBuilder.create()
         popupDialog.show()

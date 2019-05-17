@@ -5,21 +5,25 @@ import org.kuy.kuygeo.domain.GeoAlert
 import org.kuy.kuygeo.repository.GeoAlertRepository
 
 class GeoAlertService(context: Context) {
-    private val noteRepository = GeoAlertRepository(context)
+    private val geoAlertRepository = GeoAlertRepository(context)
 
     fun findById(id:Long?): GeoAlert? {
-        return noteRepository.findById(id)
+        return geoAlertRepository.findById(id)
     }
 
     fun findAll():ArrayList<GeoAlert>{
-        return noteRepository.findAll()
+        return geoAlertRepository.findAll()
     }
 
     fun save(geoAlert: GeoAlert?) {
-        noteRepository.save(geoAlert)
+        geoAlertRepository.save(geoAlert)
     }
 
     fun delete(geoAlert: GeoAlert?){
-        noteRepository.delete(geoAlert)
+        geoAlertRepository.delete(geoAlert)
+    }
+
+    fun deleteAll(){
+        geoAlertRepository.deleteAll()
     }
 }

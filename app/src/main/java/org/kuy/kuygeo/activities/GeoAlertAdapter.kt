@@ -1,9 +1,10 @@
-package org.kuy.kuygeo
+package org.kuy.kuygeo.activities
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.google.android.gms.maps.model.LatLng
+import org.kuy.kuygeo.R
 import org.kuy.kuygeo.domain.GeoAlert
 
 

@@ -1,4 +1,4 @@
-package org.kuy.kuygeo
+package org.kuy.kuygeo.activities
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
