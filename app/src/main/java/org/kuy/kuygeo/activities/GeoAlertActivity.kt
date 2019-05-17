@@ -1,15 +1,20 @@
-package org.kuy.kuygeo
+package org.kuy.kuygeo.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.GridLayoutManager
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import org.kuy.kuygeo.R
+import org.kuy.kuygeo.domain.GeoAlert
+import org.kuy.kuygeo.service.GeoAlertService
 
-class MainActivity : AppCompatActivity() {
+class GeoAlertActivity : AppCompatActivity() {
+
+    private val geoAlertService: GeoAlertService = GeoAlertService(this)
+    private var geoAlerts = ArrayList<GeoAlert>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,11 +25,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initializeComponents(){
-        fab.setOnClickListener { view ->
+        fab.setOnClickListener {
             goToMapActivity()
         }
-        alertsRV.layoutManager = LinearLayoutManager(this)
-        alertsRV.adapter = AlertAdapter()
+        alertsRV.layoutManager = GridLayoutManager(this, 3)
+        alertsRV.adapter = GeoAlertAdapter()
     }
 
     private fun goToMapActivity() {
